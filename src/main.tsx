@@ -6,39 +6,30 @@ class Square extends React.Component {
    render() {
        return (
            <button className="square">
-             {this.props.value}
+             {this.props.pos_x}
+             {this.props.pos_y}
            </button>
        );
    }
 }
 
 class Board extends React.Component {
-  renderSquare(i) {
-    return <Square value={i} />;
+  renderSquare(x, y) {
+    return <Square pos_x={x} pos_y={y} />;
   }
 
   render() {
     let items = new Array<JSX.Element>();
-      return (
-          <div>
-          <div className="status">{status}</div>
-          <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-          </div>
-          <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-          </div>
-          <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-          </div>
-          </div>
-          );
+    for(let y = 0; y < 9; ++y) {
+      let columns = new Array<JSX.Element>();
+      for(let x = 0; x < 9; ++x) {
+        columns = columns.concat(this.renderSquare(x, y));
+      }
+      items = items.concat(<div className="board-row">{columns}</div>);
+    }
+    console.log(items)
+
+    return (<div>{items}</div>);
   }
 }
 
