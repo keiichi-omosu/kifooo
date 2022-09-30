@@ -37,7 +37,7 @@ export class BoardPlayer {
     this.board[y - 1][8 - (x - 1)] = piece;
   }
 
-  get_board() {
+  get_board(): Array<Array<string>> {
     return this.board;
   }
 }
