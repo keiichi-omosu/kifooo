@@ -1,43 +1,50 @@
+import { WhitePiece, BlackPiece, ShogiPiece} from './shogi_piece'
 export class BoardPlayer {
   private board: Array<Array<string>> = [[]];
 
   // 駒をVOで表現するのありそう
   constructor() {
    this.board = [
-     ['KY', 'KE', 'GI', 'KI', 'OU', 'KI', 'GI', 'KE', 'KY'],
-     ['',   'HI', '',   '',   '',   '',   '',   'KA',  '' ],
-     ['FU', 'FU', 'FU', 'FU', 'FU', 'FU', 'FU', 'FU', 'FU'],
-     ['',   '',   '',   '',   '',   '',   '',   '',    '' ],
-     ['',   '',   '',   '',   '',   '',   '',   '',    '' ],
-     ['',   '',   '',   '',   '',   '',   '',   '',    '' ],
-     ['FU', 'FU', 'FU', 'FU', 'FU', 'FU', 'FU', 'FU', 'FU'],
-     ['',   'KA', '',   '',   '',   '',   '',   'HI',  '' ],
-     ['KY', 'KE', 'GI', 'KI', 'OU', 'KI', 'GI', 'KE', 'KY'],
+     [this.new_w('KY'), this.new_w('KE'), this.new_w('GI'), this.new_w('KI'), this.new_w('OU'), this.new_w('KI'), this.new_w('GI'), this.new_w('KE'), this.new_w('KY')],
+     [null, this.new_w('HI'), null, null, null, null, null, this.new_w('KA'), null],
+     [this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU')],
+     [null, null, null, null, null, null, null, null, null],
+     [null, null, null, null, null, null, null, null, null],
+     [null, null, null, null, null, null, null, null, null],
+     [this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU')],
+     [null, this.new_b('KA'), null,  null, null, null, null, this.new_b('HI'), null],
+     [this.new_b('KY'), this.new_b('KE'), this.new_b('GI'), this.new_b('KI'), this.new_b('OU'), this.new_b('KI'), this.new_b('GI'), this.new_b('KE'), this.new_b('KY')],
    ] 
   }
 
   move(from_x: number, from_y: number, to_x: number, to_y: number, piece: string) {
-    const old_piece: string = this.pick_piece(from_x, from_y);
-    if(old_piece != piece) {
+    const old_piece: ShogiPiece = this.pickPiece(from_x, from_y);
+    if(old_piece.getType() != piece) {
       throw new Error('InvalidArgumentError');
     }
-    this.put_piece(from_x, from_y, '')
-    this.put_piece(to_x, to_y, piece)
+    this.putPiece(from_x, from_y, null)
+    this.putPiece(to_x, to_y, old_piece)
   }
 
   // privateメソッドどう作るん？
   // 将棋用語でコマを持つのってなんていうんだっけ...?
-  pick_piece(x:number, y:number) {
+  pickPiece(x:number, y:number) {
     return this.board[y - 1][8 - (x - 1)];
   }
 
-  put_piece(x:number, y:number, piece: string) {
-    console.log(x)
-    console.log(y)
+  private putPiece(x:number, y:number, piece: string) {
     this.board[y - 1][8 - (x - 1)] = piece;
   }
 
-  get_board(): Array<Array<string>> {
+  private get_board(): Array<Array<string>> {
     return this.board;
+  }
+
+  private new_w(type: string): WhitePiece {
+    return new WhitePiece(type);
+  }
+
+  private new_b(type: string): BlackPiece {
+    return new BlackPiece(type);
   }
 }

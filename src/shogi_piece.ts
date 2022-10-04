@@ -5,11 +5,23 @@ export class ShogiPiece {
     this.player = player;
   }
 
-  get_type(): string {
+  getType(): string {
     return this.type;
   }
 
-  get_player(): string {
+  getPlayer(): string {
     return this.player;
+  }
+}
+
+export class WhitePiece extends ShogiPiece {
+  constructor(private type: string) {
+    super(type, 'white');
+  }
+}
+
+export class BlackPiece extends ShogiPiece {
+  constructor(private type: string) {
+    super(type, 'black');
   }
 }

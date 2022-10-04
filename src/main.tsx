@@ -2,16 +2,27 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { Parsers } from 'json-kifu-format'
-import { BoardPlayer } from './board_player.ts'
+import { BoardPlayer } from './board_player'
+import { KifuHistory } from './kifu_history'
+import { ShogiPiece } from './shogi_piece';
 
 class Square extends React.Component {
-   render() {
-       return (
-           <button className="square">
-             {this.props.piece}
-           </button>
-       );
-   }
+  render() {
+    // useStateを使えば楽ってほんと？
+    let className = 'square';
+
+    if(this.props.piece) {
+      className += ` piece-${this.props.piece.player}` 
+      return (
+          <button className={className}>
+          { this.props.piece.type }
+          </button>
+      );
+
+    } else {
+      return <button className={className} />
+    }
+  }
 }
 
 class Board extends React.Component {
@@ -20,7 +31,7 @@ class Board extends React.Component {
     this.state = { board: props.board };
   }
 
-  renderSquare(piece) {
+  renderSquare(piece: ShogiPiece) {
     return <Square piece={piece} />;
   }
 
@@ -40,7 +51,15 @@ class Board extends React.Component {
 class Game extends React.Component {
    constructor(props) {
      super(props)
-     this.state = { board_player: new BoardPlayer() };
+     this.state = { board_player: new BoardPlayer(), kifu_history: null };
+   }
+
+   renderKif() {
+     if(this.state.kifu_history == null) {
+       return <div></div>
+     } else {
+       return <div><div><button onClick={ this.prevKif }>prev</button><button onClick={ this.nextKif }>next</button></div></div>;
+     }
    }
 
    openKif = (event) => {
@@ -48,13 +67,26 @@ class Game extends React.Component {
      reader.onload = async (e) => {
        const text = (e.target.result)
        const kif = Parsers.parseCSA(text);
-       // TypeScriptの連想配列型定義どうなるの？
-       const move = kif.moves[1]['move']
-       this.state.board_player.move(move['from']['x'], move['from']['y'], move['to']['x'], move['to']['y'], move['piece'])
-       this.setState({ board_player: this.state.board_player });
+
+       this.setState({ board_player: this.state.board_player, kifu_history: new KifuHistory(kif) });
      }
      reader.readAsText(event.target.files[0])
    }
+
+   prevKif = () => {
+     const move = this.state.kifu_history.getCurrentKifu()['move'];
+     this.state.board_player.move(move['to']['x'], move['to']['y'], move['from']['x'], move['from']['y'], move['piece'])
+     this.state.kifu_history.prev()
+     this.setState({ board_player: this.state.board_player, kifu_history: this.state.kifu_history });
+   }
+
+   nextKif = () => {
+     this.state.kifu_history.next()
+     const move = this.state.kifu_history.getCurrentKifu()['move'];
+     this.state.board_player.move(move['from']['x'], move['from']['y'], move['to']['x'], move['to']['y'], move['piece'])
+     this.setState({ board_player: this.state.board_player, kifu_history: this.state.kifu_history });
+   }
+
    render() {
        return (
            <div className="game">
@@ -63,8 +95,7 @@ class Game extends React.Component {
                    <Board board = { this.state.board_player.get_board() } />
                </div>
                <div className="game-info">
-                   <div>{/* status */}</div>
-                   <ol>{/* TODO */}</ol>
+                 <div>{ this.renderKif() }</div>
                </div>
            </div>
        );

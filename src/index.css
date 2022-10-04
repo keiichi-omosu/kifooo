@@ -48,3 +48,7 @@ ol, ul {
 .game-info {
  margin-left: 20px;
 }
+
+.piece-white {
+  transform: rotate(180deg);
+}
