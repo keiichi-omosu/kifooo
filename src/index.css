@@ -54,6 +54,6 @@ ol, ul {
  margin-left: 20px;
 }
 
-.piece-white {
+.piece-W {
   transform: rotate(180deg);
 }

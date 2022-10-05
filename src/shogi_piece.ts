@@ -1,9 +1,6 @@
+//TODO 抽象クラス or interface  + 規定クラス
 export class ShogiPiece {
-  private shogiTypes = {
-    'FU': 'KI', 'KY' : 'KI', 'KE' : 'KI', 'GI' : 'KI', 'KA' : 'UM', 'HI' : 'RYU'
-  }
 
-  // 後からUnicon型とやらを使ってみよう
   constructor(private type: string, private player: string) {
     this.type = type;
     this.player = player;
@@ -17,39 +14,114 @@ export class ShogiPiece {
     return this.player;
   }
 
+  //TODO abstract
   isPromoted() : boolean {
-    return Object.values(this.shogiTypes).includes(this.type)
+    return false
   }
 
+  //TODO abstract
   promote() {
-    if(!this.isPromoted()) {
-      this.type = this.shogiTypes[this.type]
-    }
+    throw Error('not implement yet')
   }
 
+  //TODO abstract
   initPromote() {
-    if(!this.isPromoted()) {
-      this.type = this.shogiTypes[this.type]
-    }
+    throw Error('not implement yet')
   }
 
   togglePlayer() {
-    if(this.player == 'white') {
-      this.player = 'black'
+    if(this.player == 'W') {
+      this.player = 'B'
     } else {
-      this.player = 'white'
+      this.player = 'W'
     }
   }
 }
 
-export class WhitePiece extends ShogiPiece {
-  constructor(private type: string) {
-    super(type, 'white');
+export class Ou extends ShogiPiece {
+  constructor(player: string) {
+    super('OU', player);
+  }
+  isPromoted(): boolean {
+    return false;
+  }
+  promote(): void {}
+
+  initPromote(): void {}
+}
+
+export class Ki extends ShogiPiece {
+  constructor(player: string) {
+    super('KI', player);
+  }
+  isPromoted(): boolean {
+    return false;
+  }
+  promote(): void {}
+
+  initPromote(): void {}
+}
+
+class PromotablePiece extends ShogiPiece {
+  constructor(type: string, player: string, private promote_type: string, private promoted: boolean) {
+    super(type, player);
+    this.promote_type = promote_type;
+  }
+
+  isPromoted(): boolean {
+    return this.promoted;
+  }
+
+  promote(): void {
+    this.promoted = true;
+  }
+
+  initPromote(): void {
+    this.promoted = false;
+  }
+
+  /* override */
+  getType(): string {
+   if (this.isPromoted()) {
+     return this.promote_type;
+   } 
+   return super.getType();
   }
 }
 
-export class BlackPiece extends ShogiPiece {
-  constructor(private type: string) {
-    super(type, 'black');
+// 各クラス別ファイルにするとimport面倒そうだけど...どうしたらええんや
+export class Fu extends PromotablePiece {
+  constructor(player: string ) {
+    super('FU', player, 'NA', false)
+  }
+}
+
+export class Ky extends PromotablePiece {
+  constructor(player: string ) {
+    super('KY', player, 'NA', false)
+  }
+}
+
+export class Ke extends PromotablePiece {
+  constructor(player: string ) {
+    super('KE', player, 'NA', false)
+  }
+}
+
+export class Gi extends PromotablePiece {
+  constructor(player: string ) {
+    super('GI', player, 'NA', false)
+  }
+}
+
+export class Ka extends PromotablePiece {
+  constructor(player: string ) {
+    super('KA', player, 'UM', false)
+  }
+}
+
+export class Hi extends PromotablePiece {
+  constructor(player: string ) {
+    super('HI', player, 'RY', false)
   }
 }

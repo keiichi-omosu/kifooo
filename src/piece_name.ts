@@ -6,6 +6,7 @@ export class PieceName {
   }
 
   static translate(piece: ShogiPiece): string {
+    console.log(piece)
     return this.PIECE_NAMES[piece.getType()];
   }
 }

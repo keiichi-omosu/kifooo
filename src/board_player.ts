@@ -1,21 +1,31 @@
-import { WhitePiece, BlackPiece, ShogiPiece} from './shogi_piece'
+import { Fu, Ky, Ke, Gi, Ka, Hi, Ou, Ki, ShogiPiece} from './shogi_piece'
+
+function fuw() {
+  return new Fu('W')
+}
+
+function fub() {
+  return new Fu('B')
+}
+
 export class BoardPlayer {
-  private board: Array<Array<string>> = [[]];
+  private board: Array<Array<ShogiPiece>> = [[]];
   private blackPieceStand = []
   private whitePieceStand = []
 
-  // 駒をVOで表現するのありそう
+  //TODO  インスタンス生成のfunctionをpieceに作ってもよかったな....
+  // やっぱpieceがposition持つか....
   constructor() {
    this.board = [
-     [this.new_w('KY'), this.new_w('KE'), this.new_w('GI'), this.new_w('KI'), this.new_w('OU'), this.new_w('KI'), this.new_w('GI'), this.new_w('KE'), this.new_w('KY')],
-     [null, this.new_w('HI'), null, null, null, null, null, this.new_w('KA'), null],
-     [this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU'), this.new_w('FU')],
+     [new Ky('W'), new Ke('W'), new Gi('W'), new Gi('W'), new Ou('W'), new Ki('W'), new Gi('W'), new Ke('W'), new Ky('W')],
+     [null, new Hi('W'), null, null, null, null, null, new Ka('W'), null],
+     [fuw(), fuw(), fuw(), fuw(), fuw(), fuw(), fuw(), fuw(), fuw()],
      [null, null, null, null, null, null, null, null, null],
      [null, null, null, null, null, null, null, null, null],
      [null, null, null, null, null, null, null, null, null],
-     [this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU'), this.new_b('FU')],
-     [null, this.new_b('KA'), null,  null, null, null, null, this.new_b('HI'), null],
-     [this.new_b('KY'), this.new_b('KE'), this.new_b('GI'), this.new_b('KI'), this.new_b('OU'), this.new_b('KI'), this.new_b('GI'), this.new_b('KE'), this.new_b('KY')],
+     [fub(), fub(), fub(), fub(), fub(), fub(), fub(), fub(), fub()],
+     [null, new Ka('B'), null,  null, null, null, null, new Hi('B'), null],
+     [new Ky('B'), new Ke('B'), new Gi('B'), new Ki('B'), new Ou('B'), new Ki('B'), new Gi('B'), new Ke('B'), new Ky('B')],
    ] 
   }
 
@@ -35,11 +45,12 @@ export class BoardPlayer {
         throw new Error('InvalidArgumentError');
       } else {
         oldToPiece.togglePlayer()
+        oldToPiece.initPromote()
         this.myStand(oldFromPiece.getPlayer()).push(oldToPiece)
       }
     }
 
-    if (this.isPromotionZone(to_x, to_y, oldFromPiece)) {
+    if (this.isPromotionZone(to_y, oldFromPiece)) {
       oldFromPiece.promote()
     }
     this.putPiece(from_x, from_y, null)
@@ -64,20 +75,12 @@ export class BoardPlayer {
     return this.board;
   }
 
-  private putPiece(x:number, y:number, piece: string) {
+  private putPiece(x:number, y:number, piece: ShogiPiece) {
     this.board[y - 1][8 - (x - 1)] = piece;
   }
 
-  private new_w(type: string): WhitePiece {
-    return new WhitePiece(type);
-  }
-
-  private new_b(type: string): BlackPiece {
-    return new BlackPiece(type);
-  }
-
-  private isPromotionZone(x: number, y: number, piece: ShogiPiece) {
-    if(piece.getPlayer() == 'black') {
+  private isPromotionZone(y: number, piece: ShogiPiece) {
+    if(piece.getPlayer() == 'B') {
       return y <= 3
     } else {
       return y >= 7
@@ -85,9 +88,9 @@ export class BoardPlayer {
   }
 
   private myStand(player: string): Array<ShogiPiece> {
-    if (player == 'white') {
+    if (player == 'W') {
       return this.whitePieceStand;
-    } else if (player == 'black') {
+    } else if (player == 'B') {
       return this.blackPieceStand;
     } else {
       throw new Error('InvalidArgumentError');
