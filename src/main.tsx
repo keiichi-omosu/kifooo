@@ -5,13 +5,14 @@ import { Parsers } from 'json-kifu-format'
 import { BoardPlayer } from './board_player'
 import { KifuHistory } from './kifu_history'
 import { ShogiPiece } from './shogi_piece';
+import { PieceName } from './piece_name';
 
 
-class PiecceStand extends React.Component {
+class PiecceStand extends React.Component { 
   render() {
     const pieces = this.props.pieces.map((piece) => {
       const className = `square piece-${piece.player}`
-      return <button className={className}>{piece.type}</button>
+      return <button className={className}>{PieceName.translate(piece)}</button>
     })
     return <div className="piece-stand">{ pieces }</div>
   }
@@ -26,7 +27,7 @@ class Square extends React.Component {
       className += ` piece-${this.props.piece.player}` 
       return (
           <button className={className}>
-          { this.props.piece.type }
+          { PieceName.translate(this.props.piece) }
           </button>
       );
 

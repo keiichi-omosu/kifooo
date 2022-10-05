@@ -27,6 +27,12 @@ export class ShogiPiece {
     }
   }
 
+  initPromote() {
+    if(!this.isPromoted()) {
+      this.type = this.shogiTypes[this.type]
+    }
+  }
+
   togglePlayer() {
     if(this.player == 'white') {
       this.player = 'black'
