@@ -38,6 +38,10 @@ export class BoardPlayer {
         this.myStand(oldFromPiece.getPlayer()).push(oldToPiece)
       }
     }
+
+    if (this.isPromotionZone(to_x, to_y, oldFromPiece)) {
+      oldFromPiece.promote()
+    }
     this.putPiece(from_x, from_y, null)
     this.putPiece(to_x, to_y, oldFromPiece)
   }
@@ -70,6 +74,14 @@ export class BoardPlayer {
 
   private new_b(type: string): BlackPiece {
     return new BlackPiece(type);
+  }
+
+  private isPromotionZone(x: number, y: number, piece: ShogiPiece) {
+    if(piece.getPlayer() == 'black') {
+      return y <= 3
+    } else {
+      return y >= 7
+    }
   }
 
   private myStand(player: string): Array<ShogiPiece> {
