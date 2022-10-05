@@ -6,6 +6,17 @@ import { BoardPlayer } from './board_player'
 import { KifuHistory } from './kifu_history'
 import { ShogiPiece } from './shogi_piece';
 
+
+class PiecceStand extends React.Component {
+  render() {
+    const pieces = this.props.pieces.map((piece) => {
+      const className = `square piece-${piece.player}`
+      return <button className={className}>{piece.type}</button>
+    })
+    return <div className="piece-stand">{ pieces }</div>
+  }
+}
+
 class Square extends React.Component {
   render() {
     // useStateを使えば楽ってほんと？
@@ -91,9 +102,11 @@ class Game extends React.Component {
        return (
            <div className="game">
                <div><input type='file' onChange={this.openKif} /></div>
+               <div><PiecceStand pieces = { this.state.board_player.getWhitePieceStand() } /></div>
                <div className="game-board">
-                   <Board board = { this.state.board_player.get_board() } />
+                   <Board board = { this.state.board_player.getBoard() } />
                </div>
+               <div><PiecceStand pieces = { this.state.board_player.getBlackPieceStand() } /></div>
                <div className="game-info">
                  <div>{ this.renderKif() }</div>
                </div>

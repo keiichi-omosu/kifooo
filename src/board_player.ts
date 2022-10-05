@@ -1,6 +1,8 @@
 import { WhitePiece, BlackPiece, ShogiPiece} from './shogi_piece'
 export class BoardPlayer {
   private board: Array<Array<string>> = [[]];
+  private blackPieceStand = []
+  private whitePieceStand = []
 
   // 駒をVOで表現するのありそう
   constructor() {
@@ -18,12 +20,26 @@ export class BoardPlayer {
   }
 
   move(from_x: number, from_y: number, to_x: number, to_y: number, piece: string) {
-    const old_piece: ShogiPiece = this.pickPiece(from_x, from_y);
-    if(old_piece.getType() != piece) {
+
+    const oldFromPiece: ShogiPiece = this.pickPiece(from_x, from_y);
+    const oldToPiece: ShogiPiece = this.pickPiece(to_x, to_y);
+
+    /* 成駒の考慮がだるいので、一旦
+    if(oldFromPiece.getType() != piece) {
       throw new Error('InvalidArgumentError');
     }
+    */
+
+    if(oldToPiece) {
+      if(oldToPiece.getPlayer() == oldFromPiece.getPlayer()) {
+        throw new Error('InvalidArgumentError');
+      } else {
+        oldToPiece.togglePlayer()
+        this.myStand(oldFromPiece.getPlayer()).push(oldToPiece)
+      }
+    }
     this.putPiece(from_x, from_y, null)
-    this.putPiece(to_x, to_y, old_piece)
+    this.putPiece(to_x, to_y, oldFromPiece)
   }
 
   // privateメソッドどう作るん？
@@ -32,12 +48,20 @@ export class BoardPlayer {
     return this.board[y - 1][8 - (x - 1)];
   }
 
-  private putPiece(x:number, y:number, piece: string) {
-    this.board[y - 1][8 - (x - 1)] = piece;
+  getBlackPieceStand(): Array<ShogiPiece> {
+    return this.blackPieceStand;
   }
 
-  private get_board(): Array<Array<string>> {
+  getWhitePieceStand(): Array<ShogiPiece> {
+    return this.whitePieceStand;
+  }
+
+  getBoard(): Array<Array<string>> {
     return this.board;
+  }
+
+  private putPiece(x:number, y:number, piece: string) {
+    this.board[y - 1][8 - (x - 1)] = piece;
   }
 
   private new_w(type: string): WhitePiece {
@@ -46,5 +70,15 @@ export class BoardPlayer {
 
   private new_b(type: string): BlackPiece {
     return new BlackPiece(type);
+  }
+
+  private myStand(player: string): Array<ShogiPiece> {
+    if (player == 'white') {
+      return this.whitePieceStand;
+    } else if (player == 'black') {
+      return this.blackPieceStand;
+    } else {
+      throw new Error('InvalidArgumentError');
+    }
   }
 }

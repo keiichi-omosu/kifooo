@@ -12,6 +12,14 @@ export class ShogiPiece {
   getPlayer(): string {
     return this.player;
   }
+
+  togglePlayer() {
+    if(this.player == 'white') {
+      this.player = 'black'
+    } else {
+      this.player = 'white'
+    }
+  }
 }
 
 export class WhitePiece extends ShogiPiece {
