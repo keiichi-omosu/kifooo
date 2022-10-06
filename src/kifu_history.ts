@@ -1,11 +1,19 @@
+import { BoardMove, Move, StandMove } from "./move";
+
 export class KifuHistory {
   private currentMove: number = 0;
   private totalMove: number = 0;
-  private moves: Array<Object>;
-  private isBlackTurn: boolean = true;
+  private moves: Array<Move>;
 
   constructor(csa) {
-    this.moves = csa['moves']
+    this.moves = csa['moves'].filter((csaMove) => {  return csaMove['move'] !== undefined }).map((csaMove: {}, i: number) => {
+      if(csaMove['move']['from']) {
+        return new BoardMove(csaMove['move']['from'], csaMove['move']['to'], csaMove['move']['piece'])
+      } else {
+        const player: string = (i % 2) ? 'B' : 'W'
+        return new StandMove(csaMove['move']['to'], csaMove['move']['piece'], player)
+      }
+    })
     this.totalMove = this.moves.length;
   }
 
@@ -17,27 +25,21 @@ export class KifuHistory {
     return this.currentMove;
   }
 
-  getCurrentKifu() {
-    return this.moves[this.currentMove];
+  getCurrentKifu(): Move {
+    return this.moves[this.currentMove - 1];
   }
 
-  next() {
+  next(): void {
     if(this.currentMove >= this.totalMove) {
       throw new Error('currentMove is totalMove');
     }
     this.currentMove+= 1 
-    this.toggleTurn();
   }
 
-  prev() {
+  prev() :void {
     if(this.currentMove <= 0) {
       throw new Error('currentMove is 0');
     }
     this.currentMove-= 1 
-    this.toggleTurn();
-  }
-
-  private toggleTurn() {
-    this.isBlackTurn = !this.isBlackTurn;
   }
 }

@@ -6,7 +6,7 @@ import { BoardPlayer } from './board_player'
 import { KifuHistory } from './kifu_history'
 import { ShogiPiece } from './shogi_piece';
 import { PieceName } from './piece_name';
-
+import {Move} from './move';
 
 class PiecceStand extends React.Component { 
   render() {
@@ -79,6 +79,7 @@ class Game extends React.Component {
      reader.onload = async (e) => {
        const text = (e.target.result)
        const kif = Parsers.parseCSA(text);
+       console.log(kif)
 
        this.setState({ board_player: this.state.board_player, kifu_history: new KifuHistory(kif) });
      }
@@ -94,8 +95,9 @@ class Game extends React.Component {
 
    nextKif = () => {
      this.state.kifu_history.next()
-     const move = this.state.kifu_history.getCurrentKifu()['move'];
-     this.state.board_player.move(move['from']['x'], move['from']['y'], move['to']['x'], move['to']['y'], move['piece'])
+     const move: Move = this.state.kifu_history.getCurrentKifu();
+     console.log(move)
+     move.call(this.state.board_player)
      this.setState({ board_player: this.state.board_player, kifu_history: this.state.kifu_history });
    }
 

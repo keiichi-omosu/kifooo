@@ -29,38 +29,28 @@ export class BoardPlayer {
    ] 
   }
 
-  move(from_x: number, from_y: number, to_x: number, to_y: number, piece: string) {
-
-    const oldFromPiece: ShogiPiece = this.pickPiece(from_x, from_y);
-    const oldToPiece: ShogiPiece = this.pickPiece(to_x, to_y);
-
-    /* 成駒の考慮がだるいので、一旦
-    if(oldFromPiece.getType() != piece) {
-      throw new Error('InvalidArgumentError');
-    }
-    */
-
-    if(oldToPiece) {
-      if(oldToPiece.getPlayer() == oldFromPiece.getPlayer()) {
-        throw new Error('InvalidArgumentError');
-      } else {
-        oldToPiece.togglePlayer()
-        oldToPiece.initPromote()
-        this.myStand(oldFromPiece.getPlayer()).push(oldToPiece)
-      }
-    }
-
-    if (this.isPromotionZone(to_y, oldFromPiece)) {
-      oldFromPiece.promote()
-    }
-    this.putPiece(from_x, from_y, null)
-    this.putPiece(to_x, to_y, oldFromPiece)
+  pickPiece(x:number, y:number) {
+    const piece = this.board[y - 1][8 - (x - 1)];
+    this.board[y - 1][8 - (x - 1)] = null
+    return piece;
   }
 
-  // privateメソッドどう作るん？
-  // 将棋用語でコマを持つのってなんていうんだっけ...?
-  pickPiece(x:number, y:number) {
-    return this.board[y - 1][8 - (x - 1)];
+  putPiece(x:number, y:number, piece: ShogiPiece) {
+    this.board[y - 1][8 - (x - 1)] = piece;
+  }
+
+  takePiece(piece: ShogiPiece): void {
+    piece.togglePlayer()
+    piece.initPromote()
+    this.myStand(piece.getPlayer()).push(piece)
+  }
+
+  pickPieceFromStand(pieceType: string, player: String): ShogiPiece {
+    console.log(pieceType)
+    this.myStand(player).forEach(piece => console.log(piece))
+    const piece: ShogiPiece = this.myStand(player).find((piece) => { return piece.getType() == pieceType })
+    if (!piece) { throw new Error('駒台に該当の駒が存在しない') }
+    return piece;
   }
 
   getBlackPieceStand(): Array<ShogiPiece> {
@@ -71,15 +61,11 @@ export class BoardPlayer {
     return this.whitePieceStand;
   }
 
-  getBoard(): Array<Array<string>> {
+  getBoard(): Array<Array<ShogiPiece>> {
     return this.board;
   }
 
-  private putPiece(x:number, y:number, piece: ShogiPiece) {
-    this.board[y - 1][8 - (x - 1)] = piece;
-  }
-
-  private isPromotionZone(y: number, piece: ShogiPiece) {
+   isPromotionZone(y: number, piece: ShogiPiece) {
     if(piece.getPlayer() == 'B') {
       return y <= 3
     } else {
@@ -93,7 +79,7 @@ export class BoardPlayer {
     } else if (player == 'B') {
       return this.blackPieceStand;
     } else {
-      throw new Error('InvalidArgumentError');
+      throw new Error(`InvalidArgumentError ${player}`);
     }
   }
 }
